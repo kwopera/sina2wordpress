@@ -5,7 +5,7 @@
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
 # | Created: 2011-02-21
-# | Last modified: 2012-03-09
+# | Last modified: 2014-04-23
 # | Description:
 # |     Core Process of Sina2WordPress
 # |     Analyze Sina Blog and convert it to WXR for WordPress
@@ -20,6 +20,9 @@ import time
 import urllib
 import urllib2
 import cookielib
+
+""" Now user need to install BeautifulSoup 4 before using the script for parsing the content HTML - 2014.04.23 """ 
+from bs4 import BeautifulSoup """ Use BeautifulSoup to parse the blog content and replace img src with real_src value """
 
 SLEEP_TIME = 1
 
@@ -187,7 +190,14 @@ def post_analyze(url, wordpress_admin):
     if post_content[-6:] == '</div>': 
         post_content = post_content[:-6].rstrip()
 
-    result = post_category_pattern.search(page)
+        """ Replace the value of images' src with real_src so the photos from external sources actually show up on Wordpress """
+        soup = BeautifulSoup(post_content)
+        for img in soup.findAll('img'):
+            if img.has_key('real_src'):
+                img['src'] = img['real_src']
+        post_content = str(soup)
+
+        result = post_category_pattern.search(page)
     if result:
         post_category = content_clear(result.group(1))
     else: 
@@ -232,3 +242,4 @@ def index_analyze(url):
     content_url = contents_pattern.search(page).group(1)
 
     return content_url, sina_admin
+
