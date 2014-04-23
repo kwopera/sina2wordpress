@@ -22,7 +22,7 @@ import urllib2
 import cookielib
 
 """ Now user need to install BeautifulSoup 4 before using the script for parsing the content HTML - 2014.04.23 """ 
-from bs4 import BeautifulSoup """ Use BeautifulSoup to parse the blog content and replace img src with real_src value """
+from bs4 import BeautifulSoup 
 
 SLEEP_TIME = 1
 
@@ -193,7 +193,7 @@ def post_analyze(url, wordpress_admin):
         """ Replace the value of images' src with real_src so the photos from external sources actually show up on Wordpress """
         soup = BeautifulSoup(post_content)
         for img in soup.findAll('img'):
-            if img.has_key('real_src'):
+            if img.has_attr('real_src'):
                 img['src'] = img['real_src']
         post_content = str(soup)
 
